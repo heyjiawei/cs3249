@@ -6,6 +6,10 @@ body {
 	margin: 0;
 }
 
+a {
+	text-decoration: none;
+}
+
 [class*="col-"]{
 	float: left;
 	width: 100%;
@@ -25,7 +29,29 @@ body {
 }
 
 .menu {
+	background: lightgrey;
+}
+
+.menu > li {
+	padding: 0.5em 1em 0.5em 1em;
+	list-style-type: none;
+}
+
+.menu > li:hover {
+	background: white;
+}
+
+.menu > li:active {
 	background: grey;
+}
+
+.content {
+	padding: 1em;
+}
+
+.content > h1 {
+	font-weight: bold;
+	font-size: 1.5em;
 }
 
 .images > img {
@@ -37,12 +63,14 @@ body {
 	background: grey;
 	padding: 1em 1em;
 	text-align: center;
+	color: white;
 }
 
 .copyright {
 	background: grey;
 	padding: 1em 1em;
 	text-align: center;
+	color: white;
 }
 
 @media (min-width: 600px) {
