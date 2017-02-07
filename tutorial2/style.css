@@ -1,0 +1,103 @@
+/* Grid system set up code part 1 */
+* {
+	box-sizing: border-box;
+}
+
+[class*="col-"]{
+	float: left;
+	width: 100%;
+}
+/* Grid system set up code part 1 end */
+a {
+	text-align: center;
+}
+
+h1 {
+	padding: 0em 0.4em;
+}
+
+p {
+	padding: 0em 1em;
+}
+
+img {
+	padding: 2%;
+}
+
+.logoWrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.links {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Creating Grid for mobile,
+Grid system set up code part 2 */
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+/* Grid system set up code part 2 end */
+
+/* For tablets */
+@media (min-width: 600px) {
+	.col-1-m {width: 8.33%;}
+	.col-2-m {width: 16.66%;}
+	.col-3-m {width: 25%;}
+	.col-4-m {width: 33.33%;}
+	.col-5-m {width: 41.66%;}
+	.col-6-m {width: 50%;}
+	.col-7-m {width: 58.33%;}
+	.col-8-m {width: 66.66%;}
+	.col-9-m {width: 75%;}
+	.col-10-m {width: 83.33%;}
+	.col-11-m {width: 91.66%;}
+	.col-12-m {width: 100%;}
+
+	.menu {
+		height: 100%;
+		position: relative;
+	}
+
+	.links {
+		position: absolute;
+		margin-left: 50%;
+		bottom: 0;
+	}
+
+	.logoWrapper {
+		display: flex;
+		align-items: center;
+		justify-content: left;
+	}
+
+}
+
+/* For laptops */
+@media (min-width: 1000px) {
+	.col-1-l {width: 8.33%;}
+	.col-2-l {width: 16.66%;}
+	.col-3-l {width: 25%;}
+	.col-4-l {width: 33.33%;}
+	.col-5-l {width: 41.66%;}
+	.col-6-l {width: 50%;}
+	.col-7-l {width: 58.33%;}
+	.col-8-l {width: 66.66%;}
+	.col-9-l {width: 75%;}
+	.col-10-l {width: 83.33%;}
+	.col-11-l {width: 91.66%;}
+	.col-12-l {width: 100%;}
+}
