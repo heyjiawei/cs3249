@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tutorial 4</title>
+</head>
+<body>
+<canvas id="canvas" width="400" height="400"></canvas>
+</body>
+<script type="text/javascript">
+/*
+Checkerbox
+1. Define the canvas window to be 400px by 400px,
+2. To create rectangles of 50px by 50px to cover the canvas, ensure that starting point of drawn rectangles move by 50px each time
+3. Create an array containing colours to be coloured to rectangles in the order of y and shift the band after drawing each column (shift the band in x for loop)
+*/
+function drawCheckerbox() {
+  var canvas = document.getElementById('canvas');
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    var colours = ["white", "grey", "blue", "yellow", "white", "grey", "blue", "yellow"];
+	for (x = 0; x < 8; x++) {
+		for (y = 0; y < 8; y++) {
+			ctx.fillStyle = colours[y];
+			ctx.fillRect(x*50, y*50, 50, 50);
+
+		}
+		colours.push(colours[0]);
+		colours.splice(0, 1);
+	}
+  }
+}
+
+drawCheckerbox();
+
+function drawSmilieFace() {
+	
+}
+</script>
+</html>
