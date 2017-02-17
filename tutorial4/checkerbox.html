@@ -5,6 +5,7 @@
 </head>
 <body>
 <canvas id="canvas" width="400" height="400"></canvas>
+<canvas id="smilieFace" width="200" height="200"></canvas>
 </body>
 <script type="text/javascript">
 /*
@@ -33,7 +34,38 @@ function drawCheckerbox() {
 drawCheckerbox();
 
 function drawSmilieFace() {
-	
+	var canvas = document.getElementById('smilieFace');
+	if (canvas.getContext) {
+		var ctx = canvas.getContext('2d');
+		ctx.beginPath();
+    	// Outer circle
+    	ctx.arc(100, 100, 50, 0, Math.PI * 2, true);
+	    ctx.fillStyle = "yellow";
+	    ctx.fill();
+	    ctx.stroke();
+
+	    // Mouth (clockwise)
+	    ctx.beginPath();
+	    ctx.moveTo(135, 100);
+	    ctx.arc(100, 100, 35, 0, Math.PI, false);  
+	    ctx.lineTo(135, 100);
+	    ctx.fillStyle = "black";
+	    ctx.fill();
+
+	    // Left eye
+	    ctx.beginPath();
+	    ctx.arc(75, 90, 5, 0, Math.PI * 2, true);  
+	    ctx.fill();
+
+	    // Right eye
+	    ctx.beginPath();
+	    ctx.arc(125, 90, 5, 0, Math.PI * 2, true);  
+    	ctx.fill();	
+	}
 }
+
+drawSmilieFace();
+
+
 </script>
 </html>
