@@ -33,6 +33,11 @@ function drawCheckerbox() {
 
 drawCheckerbox();
 
+
+/*
+identify the parts needed to draw a smilie. 
+Separately draw each part (to avoid moveTo())
+*/
 function drawSmilieFace() {
 	var canvas = document.getElementById('smilieFace');
 	if (canvas.getContext) {
@@ -67,5 +72,90 @@ function drawSmilieFace() {
 drawSmilieFace();
 
 
+/*
+Create image to drag about with img object
+Set image to position absolute so it can be "fixed" to the
+position it was dragged to. This is because the document body is by default, position relative.
+
+
+*/
+var img = new Image();
+img.src = "D750.png";
+img.id = "drag";
+img.style.position = "absolute";
+document.body.appendChild(img);
+
+/*
+Initialise the image as a draggable.
+In initialising, set its initial mouse X and Y position
+and add mouseup and mousemove event listeners to it.
+Also set the object's initial X and Y position.
+As the object is dragged, calculate the x and y changes respective to the initial mouse X and Y position and set the object position (while still mouse moving) to the calculated changes. This is the draggable image we see as we move our mouse.
+Lastly, set mouseup to release the object.
+*/
+function addEventSimple(obj, event, fn) {
+	if (obj.addEventListener)
+		obj.addEventListener(event, fn, false);
+	else if (obj.attachEvent)
+		obj.attachEvent("on"+event, fn);
+}
+
+function removeEventSimple(obj, event, fn) {
+	if (obj.removeEventListener)
+		obj.removeEventListener(event, fn, false);
+	else if (obj.detachEvent)
+		obj.detachEvent("on"+evt, fn);
+}
+
+dragDrop = {
+	initialMouseX: undefined,
+	initialMouseY: undefined,
+	startX: undefined,
+	startY: undefined,
+	dX: undefined,
+	dY: undefined,
+	draggedObject: undefined,
+	initElement: function(element) {
+		element = document.getElementById("drag");
+		element.onmousedown = dragDrop.startDragMouse;
+	},
+	startDrag: function(obj) {
+		if (dragDrop.draggedObject)
+			dragDrop.releaseElement();
+		dragDrop.startX = obj.offsetLeft;
+		dragDrop.startY = obj.offsetTop;
+		dragDrop.draggedObject = obj;
+	},
+	startDragMouse: function(e) {
+		dragDrop.startDrag(this);
+		var event = e || window.event;
+		dragDrop.initialMouseX = event.clientX;
+		dragDrop.initialMouseY = event.clientY;
+		addEventSimple(document, "mousemove", dragDrop.dragMouse);
+		addEventSimple(document, "mouseup", dragDrop.releaseElement);
+		return false;
+	},
+	dragMouse: function(e) {
+		var evt = e || window.event;
+		var dX = evt.clientX - dragDrop.initialMouseX;
+		var dY = evt.clientY - dragDrop.initialMouseY;
+		dragDrop.setPosition(dX,dY);
+		return false;
+	},
+	setPosition: function(dx, dy) {
+		dragDrop.draggedObject.style.left = dragDrop.startX + dx + 'px';
+		dragDrop.draggedObject.style.top = dragDrop.startY + dy + 'px';
+	},
+	releaseElement: function() {
+		removeEventSimple(document,'mousemove',dragDrop.dragMouse);
+		removeEventSimple(document,'mouseup',dragDrop.releaseElement);
+		dragDrop.draggedObject = null;
+	}
+}
+
+dragDrop.initElement(img);
+/*
+Object approach consist of high level commands that manage multiple other approaches (strokes and pixels) in an instruction. In doing so, it reduces both the lines of code written and some control in the process of being more efficient.
+*/
 </script>
 </html>
