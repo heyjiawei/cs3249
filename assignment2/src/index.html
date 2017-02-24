@@ -79,6 +79,27 @@
 
 
      	// Your code here
+        var canvas = document.getElementById('canvas');
+        if (canvas.getContext) {
+            var ctx = canvas.getContext('2d');
+            var each_checker_width = 400 / board.boardSize;
+            var flip = true;
+            for (x = 0; x < board.boardSize; x++) {
+                for (y = 0; y < board.boardSize; y++) {
+                    if (flip) {
+                        ctx.fillStyle = "white";
+                    } else {
+                        ctx.fillStyle = "grey";
+                    }
+                    ctx.fillRect(x * each_checker_width, 
+                                y * each_checker_width, 
+                                each_checker_width, 
+                                each_checker_width);
+                    flip = !flip;
+                }
+                flip = !flip;
+            }
+        }
 
         board.addEventListener('add',function (e) {
     		// Your code here
@@ -132,9 +153,7 @@
         </td>
 
         <td id="content">
-			
-				<!-- Your code here -->
-            
+			<canvas id="canvas" width="400" height="400"></canvas>
         </td>
     </tr>
 
