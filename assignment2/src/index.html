@@ -86,31 +86,17 @@
         // (1,6) (3,6) (5,6) (7,6)
         // (0,7) (2,7) (4,7) (6,7) (black king)
         var each_checker_width = 400 / board.size();
-        var createRedCheckers = function(x, y, width) {
-            var red_checker = new Image();
-            red_checker.src = "graphics/red-piece.png";
-            // red_checker.height = width;
-            // red_checker.width = width;
-            board.add(new Checker("red", false), y, x);
-            red_checker.onload = function() {
-                ctx.drawImage(red_checker, 
-                    x * width, 
-                    y * width, 
-                    width, width);
-            }
-        }
 
-        var createBlackCheckers = function(x, y, width) {
-            var black_checker = new Image();
-            black_checker.src = "graphics/black-piece.png";
-            // black_checker.height = width;
-            // black_checker.width = width;
-            board.add(new Checker("black", false), y, x);
-            black_checker.onload = function() {
-                ctx.drawImage(black_checker,
-                    x * width,
-                    y * width,
-                    width, width);
+        var createChecker = function(x, y, width, colour, isKing) {
+            var checker = new Image();
+            if (isKing) {
+                checker.src = "graphics/"+ colour +"-king.png";
+            } else {
+                checker.src = "graphics/"+ colour +"-piece.png";
+            }
+            board.add(new Checker(colour, isKing), y, x);
+            checker.onload = function() {
+                ctx.drawImage(checker, x * width, y * width, width, width);
             }
         }
 
@@ -134,16 +120,16 @@
 
                     // Place checker images
                     if (y == 0 && (x % 2 == 1)) {
-                        createRedCheckers(x, y, each_checker_width);
+                        createChecker(x, y, each_checker_width, "red", false);
                     }
                     if (y == 1 && (x % 2 == 0)) {
-                        createRedCheckers(x, y, each_checker_width);
+                        createChecker(x, y, each_checker_width, "red", false);
                     }
                     if ((y == board.size() - 2) && (x % 2 == 1)) {
-                        createBlackCheckers(x, y, each_checker_width);
+                        createChecker(x, y, each_checker_width, "black", false);
                     }
                     if ((y == board.size() - 1) && (x % 2 == 0)) {
-                        createBlackCheckers(x, y, each_checker_width);
+                        createChecker(x, y, each_checker_width, "black", false);
                     }
                 }
                 flip = !flip;
