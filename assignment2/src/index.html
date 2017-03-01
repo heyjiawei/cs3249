@@ -59,7 +59,6 @@
     // Fill in this function to toggle the display for whose turn
     // The color parameter should be either "black" or "red"
     var toggleTurn = function(color) {
-	// Your code here
         if (color == "black") {
             whoseTurn = "red";
         } else {
@@ -70,52 +69,6 @@
         turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1);
         turnDiv.style.backgroundColor = whoseTurn;
     }
-
-    // var clear = function() {
-    //     var ctx = document.getElementById('canvas').getContext('2d');
-    //     ctx.clearRect(0, 0, 400, 400);
-    // }
-
-    // var draw = function() {
-    //     // draw checkerboard again
-    //     var each_checker_width = 400 / board.size();
-    //     var ctx = document.getElementById('canvas').getContext('2d');
-    //     var flip = true;
-    //     for (x = 0; x < board.size(); x++) {
-    //         for (y = 0; y < board.size(); y++) {
-    //             // Draw checker squares
-    //             if (flip) {
-    //                 ctx.fillStyle = "white";
-    //             } else {
-    //                 ctx.fillStyle = "grey";
-    //             }
-    //             ctx.fillRect(x * each_checker_width, 
-    //                         y * each_checker_width, 
-    //                         each_checker_width, 
-    //                         each_checker_width);
-    //             flip = !flip;
-    //         }
-    //         flip = !flip;
-    //     }
-
-    //     var arr = board.getAllCheckers();
-    //     for (var i = 0; i < arr.length; i++) {
-    //         var checkerObj = arr[i];
-    //         var checker = new Image();
-    //         if (checkerObj.isKing) {
-    //             checker.src = "graphics/"+ checkerObj.color +"-king.png";
-    //         } else {
-    //             checker.src = "graphics/"+ checkerObj.color +"-piece.png";
-    //         }
-    //         console.log(checker);
-    //         ctx.drawImage(checker, 
-    //             checker.col * each_checker_width,
-    //             checker.row * each_checker_width,
-    //             each_checker_width,
-    //             each_checker_width);
-    //         console.log('hi');
-    //     }
-    // }
 
     // This allows the Javascript code inside this block to only run when the page
     // has finished loading in the browser.
@@ -138,9 +91,11 @@
         // black at:
         // (1,6) (3,6) (5,6) (7,6)
         // (0,7) (2,7) (4,7) (6,7) (black king)
-        function draw() {
+        function draw(move) {
             drawCheckerboard();
             drawCheckers();
+            if (typeof move !== "undefined")
+                drawArrow(move);
         }
 
         function drawCheckerboard() {
@@ -222,56 +177,43 @@
             });
         }
 
-        // var each_checker_width = 400 / board.size();
+        function drawArrow(move) {
+            var ctx = document.getElementById('canvas').getContext('2d');
+            console.log(move);
+            ctx.save();
+            var scale = DEFAULT_BOARD_SIZE / board.size();
+            var width = 400/board.size();
+            var from_center = [width * move.from_col + width/2, 
+                                width * move.from_row + width/2];
+            var to_center = [width * move.to_col + width/2,
+                            width * move.to_row + width/2];
+            console.log(from_center, to_center);
+            ctx.fillStyle = "yellow";
+            // console.log(scale);
+            //ctx.scale(scale, scale);
 
-        // var createChecker = function(x, y, width, colour, isKing) {
-        //     var checker = new Image();
-        //     if (isKing) {
-        //         checker.src = "graphics/"+ colour +"-king.png";
-        //     } else {
-        //         checker.src = "graphics/"+ colour +"-piece.png";
-        //     }
-        //     board.add(new Checker(colour, isKing), y, x);
-        //     checker.onload = function() {
-        //         ctx.drawImage(checker, x * width, y * width, width, width);
-        //     }
-        // }
+            // translate first than scale
+            ctx.beginPath();
+            
+            // ctx.translate(200, 80); // translate to rectangle center 
+            //               // x = x + 0.5 * width
+            //               // y = y + 0.5 * height
+            // ctx.rotate((Math.PI / 180) * 25); // rotate
+            // ctx.translate(-200, -80); // translate back
+            
+            ctx.moveTo(75, 50);
+            ctx.lineTo(100, 75);
+            ctx.lineTo(100, 25);
+            ctx.fill();
+            // ctx.save()
 
-        // var canvas = document.getElementById('canvas');
-        // if (canvas.getContext) {
-        //     var ctx = canvas.getContext('2d');
-        //     var flip = true;
-        //     for (x = 0; x < board.size(); x++) {
-        //         for (y = 0; y < board.size(); y++) {
-        //             // Draw checker squares
-        //             if (flip) {
-        //                 ctx.fillStyle = "white";
-        //             } else {
-        //                 ctx.fillStyle = "grey";
-        //             }
-        //             ctx.fillRect(x * each_checker_width, 
-        //                         y * each_checker_width, 
-        //                         each_checker_width, 
-        //                         each_checker_width);
-        //             flip = !flip;
-
-        //             // Place checker images
-        //             if (y == 0 && (x % 2 == 1)) {
-        //                 createChecker(x, y, each_checker_width, "red", false);
-        //             }
-        //             if (y == 1 && (x % 2 == 0)) {
-        //                 createChecker(x, y, each_checker_width, "red", false);
-        //             }
-        //             if ((y == board.size() - 2) && (x % 2 == 1)) {
-        //                 createChecker(x, y, each_checker_width, "black", false);
-        //             }
-        //             if ((y == board.size() - 1) && (x % 2 == 0)) {
-        //                 createChecker(x, y, each_checker_width, "black", false);
-        //             }
-        //         }
-        //         flip = !flip;
-        //     }
-        // }
+            ctx.strokeStyle = "yellow";
+            ctx.beginPath();
+            ctx.moveTo(from_center[0], from_center[1]);
+            ctx.lineTo(to_center[0], to_center[1]);
+            ctx.stroke();
+            ctx.restore();
+        }
 
         board.addEventListener('add',function (e) {
     		// Your code here
@@ -300,9 +242,8 @@
           var playerColor = whoseTurn;
           var playerDirection = directionOf(playerColor);
           var result = rules.makeRandomMovement(playerColor, playerDirection);
-          
           if (result != null) {
-            draw();
+            draw(result);
             toggleTurn(whoseTurn);
           }
         });
