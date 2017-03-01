@@ -60,6 +60,11 @@
     // The color parameter should be either "black" or "red"
     var toggleTurn = function(color) {
 	// Your code here
+        if (color == "black") {
+            whoseTurn = "red";
+        } else {
+            whoseTurn = "black";
+        }
     }
 
     // var clear = function() {
@@ -179,7 +184,6 @@
         function drawCheckers() {
             var ctx = document.getElementById('canvas').getContext('2d');
             var arr = board.getAllCheckers();
-            console.log(arr);
             var each_checker_width = 400 / board.size();
             var sources = {
                 black_piece : "graphics/black-piece.png",
@@ -285,18 +289,17 @@
         
         $("#btnNewGame").click(function(evt) {
             board.prepareNewGame();
+            draw();
         });
 
         $("#btnAutoMove").click(function(evt) {
           var playerColor = whoseTurn;
           var playerDirection = directionOf(playerColor);
-          // console.log(board.square);
           var result = rules.makeRandomMovement(playerColor, playerDirection);
-          // console.log(result);
           
           if (result != null) {
             draw();
-            toggleTurn();
+            toggleTurn(whoseTurn);
           }
         });
 
