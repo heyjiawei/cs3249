@@ -65,6 +65,10 @@
         } else {
             whoseTurn = "black";
         }
+        var turn = document.getElementById("turnColour");
+        var turnDiv = document.getElementById("turnDiv");
+        turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1);
+        turnDiv.style.backgroundColor = whoseTurn;
     }
 
     // var clear = function() {
@@ -319,7 +323,7 @@
         <td id="navigation">
           <table>
 			  <tr><td>		<!-- Your code here -->			
-                <div id="turnDiv" style="text-align: center;"><span id="turnColour">Your</span> Turn</div>
+                <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black</span> Turn</div>
               </td></tr>
               <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
               <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
