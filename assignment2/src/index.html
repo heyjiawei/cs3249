@@ -266,7 +266,7 @@
             var img = new Image();
             img.id = e.details.checker.id;
             img.style.position = "absolute";
-            img.style.zIndex = 2;
+            img.style.zIndex = 3;
             img.style.height = width + "px";
             img.style.top = e.details.checker.row * width + "px";
             img.style.left = e.details.checker.col * width + "px";
@@ -288,6 +288,13 @@
             var canvasDiv = document.getElementById("canvasDiv");
             canvasDiv.style.position = "relative";
             canvasDiv.appendChild(img);
+
+            var svg = document.getElementById("svgCanvas");
+            svg.style.position = "absolute";
+            svg.style.zIndex = 4;
+            svg.style.top = "0px";
+
+
     	},true);
 
     	board.addEventListener('move',function (e) {
@@ -295,6 +302,14 @@
             var img = document.getElementById(checker.id);
             img.style.top = e.details.toRow * width + "px";
             img.style.left = e.details.toCol * width + "px";
+            console.log(e);
+            var arrowLine = document.getElementById("arrowLine");
+            arrowLine.setAttribute("y1", e.details.fromRow * width + width/2 + "px");
+            arrowLine.setAttribute("x1", e.details.fromCol * width + width/2 + "px");
+            arrowLine.setAttribute("y2", e.details.toRow * width + width/2 + "px");
+            arrowLine.setAttribute("x2", e.details.toCol * width + width/2 + "px");
+
+            console.log(arrowLine);
     	},true);
 
         board.addEventListener('remove', function(e) {
@@ -360,6 +375,20 @@
         <td id="content">
 			<div id="canvasDiv">
                 <canvas id="canvas" width="400" height="400"></canvas>
+                <!-- Sets the svg 'canvas' width and height -->
+                <svg id="svgCanvas" width="400px" height="400px">
+                  <defs>
+                  <!-- markerWidth and markerHeight sets the 
+                  arrow head width and height -->
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                      <path d="M0,0 L0,6 L9,3 z" fill="#ff0" />
+                    </marker>
+                  </defs>
+                <!-- x1 y1 sets the starting position
+                    x2 y2 sets the ending position -->
+                  <line id="arrowLine" x1="0" y1="0" x2="0" y2="0" stroke="#ff0" stroke-width="3" marker-end="url(#arrow)" />
+                </svg>
+
             </div>
         </td>
     </tr>
