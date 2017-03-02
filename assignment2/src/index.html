@@ -251,17 +251,15 @@
         }       
 
         var checkerId = 0;
-        var index_position = [10, 155]; // pixels at (0, 0)
         var width = 400 / board.size();
+        var sources = {
+            black_piece : "graphics/black-piece.png",
+            black_king : "graphics/black-king.png",
+            red_piece : "graphics/red-piece.png",
+            red_king : "graphics/red-king.png"
+        };
 
         board.addEventListener('add',function (e) {
-            var sources = {
-                black_piece : "graphics/black-piece.png",
-                black_king : "graphics/black-king.png",
-                red_piece : "graphics/red-piece.png",
-                red_king : "graphics/red-king.png"
-            };
-
             e.details.checker.id = "checker" + checkerId;
             checkerId++;
 
@@ -270,8 +268,8 @@
             img.style.position = "absolute";
             img.style.zIndex = 2;
             img.style.height = width + "px";
-            img.style.top = e.details.checker.row * width + index_position[0] + "px";
-            img.style.left = e.details.checker.col * width + index_position[1] + "px";
+            img.style.top = e.details.checker.row * width + "px";
+            img.style.left = e.details.checker.col * width + "px";
 
             if (e.details.checker.color == "red") {
                 if (e.details.checker.isKing) {
@@ -286,15 +284,17 @@
                     img.src = sources.black_piece;
                 }
             }
-            document.getElementById("content").appendChild(img);
 
+            var canvasDiv = document.getElementById("canvasDiv");
+            canvasDiv.style.position = "relative";
+            canvasDiv.appendChild(img);
     	},true);
 
     	board.addEventListener('move',function (e) {
             var checker = e.details.checker;
             var img = document.getElementById(checker.id);
-            img.style.top = e.details.toRow * width + index_position[0] + "px";
-            img.style.left = e.details.toCol * width + index_position[1] + "px";
+            img.style.top = e.details.toRow * width + "px";
+            img.style.left = e.details.toCol * width + "px";
     	},true);
 
         board.addEventListener('remove', function(e) {
@@ -303,13 +303,25 @@
         }, true);
 
         board.addEventListener('promote',function (e) {
-    		// Your code here
+            var checker = e.details.checker;
+            var img = document.getElementById(checker.id);
+            if (checker.isKing && checker.color == "red") {
+                img.src = sources.red_king;    
+            } else {
+                img.src = sources.black_king;
+            }
     	},true);
 
         
         $("#btnNewGame").click(function(evt) {
             board.prepareNewGame();
-            draw();
+            drawCheckerboard();
+            
+            whoseTurn = "black";
+            var turn = document.getElementById("turnColour");
+            var turnDiv = document.getElementById("turnDiv");
+            turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1);
+            turnDiv.style.backgroundColor = whoseTurn;
         });
 
         $("#btnAutoMove").click(function(evt) {
@@ -317,13 +329,12 @@
           var playerDirection = directionOf(playerColor);
           var result = rules.makeRandomMovement(playerColor, playerDirection);
           if (result != null) {
-            draw(result);
             toggleTurn(whoseTurn);
           }
         });
 
         board.prepareNewGame();
-        draw();
+        drawCheckerboard();
 
     });
 </script>
@@ -347,7 +358,9 @@
         </td>
 
         <td id="content">
-			<canvas id="canvas" width="400" height="400"></canvas>
+			<div id="canvasDiv">
+                <canvas id="canvas" width="400" height="400"></canvas>
+            </div>
         </td>
     </tr>
 
