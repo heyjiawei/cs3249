@@ -298,7 +298,8 @@
     	},true);
 
         board.addEventListener('remove', function(e) {
-        	// Your code here
+            var checkerId = e.details.checker.id;
+            document.getElementById(checkerId).remove();
         }, true);
 
         board.addEventListener('promote',function (e) {
