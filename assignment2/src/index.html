@@ -93,9 +93,9 @@
         // (0,7) (2,7) (4,7) (6,7) (black king)
         function draw(move) {
             drawCheckerboard();
-            drawCheckers();
-            if (typeof move !== "undefined")
-                drawArrow(move);
+            // drawCheckers();
+            // if (typeof move !== "undefined")
+            //     drawArrow(move);
         }
 
         function drawCheckerboard() {
@@ -121,61 +121,95 @@
             }
         }
 
-        function loadImages(sources, callback) {
-            var images = {};
-            var loadedImages = 0;
-            var numImages = 0;
-            // get num of sources
-            for(var src in sources) {
-                numImages++;
-            }
-            for(var src in sources) {
-                images[src] = new Image();
-                images[src].onload = function() {
-                    if(++loadedImages >= numImages) {
-                        callback(images);
-                    }
-                };
-                images[src].src = sources[src];
-            }
-        }
+        // function loadImages(sources, callback) {
+        //     var images = {};
+        //     var loadedImages = 0;
+        //     var numImages = 0;
+        //     // get num of sources
+        //     for(var src in sources) {
+        //         numImages++;
+        //     }
+        //     for(var src in sources) {
+        //         images[src] = new Image();
+        //         images[src].onload = function() {
+        //             if(++loadedImages >= numImages) {
+        //                 callback(images);
+        //             }
+        //         };
+        //         images[src].src = sources[src];
+        //     }
+        // }
 
-        function drawCheckers() {
-            var ctx = document.getElementById('canvas').getContext('2d');
-            var arr = board.getAllCheckers();
-            var each_checker_width = 400 / board.size();
-            var sources = {
-                black_piece : "graphics/black-piece.png",
-                black_king : "graphics/black-king.png",
-                red_piece : "graphics/red-piece.png",
-                red_king : "graphics/red-king.png"
-            };
+        // function drawCheckers() {
+            // var ctx = document.getElementById('canvas').getContext('2d');
+            // var arr = board.getAllCheckers();
+            // var width = 400 / board.size();
+            // var index_position = [10, 155]; // pixels at (0, 0)
+            // var sources = {
+            //     black_piece : "graphics/black-piece.png",
+            //     black_king : "graphics/black-king.png",
+            //     red_piece : "graphics/red-piece.png",
+            //     red_king : "graphics/red-king.png"
+            // };
+
+            // var img = new Image();
+            // img.src = "graphics/red-piece.png";
+            // img.id = "drag";
+            // img.style.position = "absolute";
+            // img.style.zIndex = 2;
+
+            // // document.body.appendChild(img);
+            // document.getElementById('content').appendChild(img); 
+            
+            // for (var i = 0; i < arr.length; i++) {
+            //     var checker = arr[i];
+            //     checker.id = "drag" + i; // add DOM id to checker
+            //     var img = new Image();
+            //     img.id = checker.id;
+            //     img.style.position = "absolute";
+            //     img.style.zIndex = 2;
+
+            //     // Set image src
+            //     if (checker.color == "red") {
+            //         if (checker.isKing) {
+            //             img.src = sources.red_piece;
+            //         } else {
+            //             img.src = sources.red_king;
+            //         }
+            //     } else {
+            //         if (checker.isKing) {
+            //             img.src = sources.black_piece;
+            //         } else {
+            //             img.src = sources.black_king;
+            //         }
+            //     }
+            // }
             // load image when loaded
-            loadImages(sources, function(images) {
-                for (var i = 0; i < arr.length; i++) {
-                    var checker = arr[i];
-                    var img;
-                    if (checker.color == "red") {
-                        if (checker.isKing) {
-                            img = images.red_king;
-                        } else {
-                            img = images.red_piece;
-                        }
-                    } else {
-                        if (checker.isKing) {
-                            img = images.black_king;
-                        } else {
-                            img = images.black_piece;
-                        }
-                    }
-                    ctx.drawImage(img, 
-                                checker.col * each_checker_width, 
-                                checker.row * each_checker_width, 
-                                each_checker_width, 
-                                each_checker_width);
-                }
-            });
-        }
+            // loadImages(sources, function(images) {
+            //     for (var i = 0; i < arr.length; i++) {
+            //         var checker = arr[i];
+            //         var img;
+            //         if (checker.color == "red") {
+            //             if (checker.isKing) {
+            //                 img = images.red_king;
+            //             } else {
+            //                 img = images.red_piece;
+            //             }
+            //         } else {
+            //             if (checker.isKing) {
+            //                 img = images.black_king;
+            //             } else {
+            //                 img = images.black_piece;
+            //             }
+            //         }
+            //         ctx.drawImage(img, 
+            //                     checker.col * each_checker_width, 
+            //                     checker.row * each_checker_width, 
+            //                     each_checker_width, 
+            //                     each_checker_width);
+            //     }
+            // });
+        // }
 
         function drawArrow(move) {
             var ctx = document.getElementById('canvas').getContext('2d');
@@ -195,13 +229,14 @@
             // translate first than scale
             ctx.beginPath();
             
-            // ctx.translate(200, 80); // translate to rectangle center 
-            //               // x = x + 0.5 * width
-            //               // y = y + 0.5 * height
-            // ctx.rotate((Math.PI / 180) * 25); // rotate
-            // ctx.translate(-200, -80); // translate back
+            // ctx.translate(100, 0); // translate to rectangle center 
+                          // x = x + 0.5 * width
+                          // y = y + 0.5 * height
+            
+            // ctx.translate(-100, 0); // translate back
             
             ctx.moveTo(75, 50);
+            // ctx.rotate((Math.PI / 180) * 45); // rotate
             ctx.lineTo(100, 75);
             ctx.lineTo(100, 25);
             ctx.fill();
@@ -213,15 +248,50 @@
             ctx.lineTo(to_center[0], to_center[1]);
             ctx.stroke();
             ctx.restore();
-        }
+        }       
 
+        var checkerId = 0;
         board.addEventListener('add',function (e) {
-    		// Your code here
+            var width = 400 / board.size();
+            var index_position = [10, 155]; // pixels at (0, 0)
+            var sources = {
+                black_piece : "graphics/black-piece.png",
+                black_king : "graphics/black-king.png",
+                red_piece : "graphics/red-piece.png",
+                red_king : "graphics/red-king.png"
+            };
+
+            e.details.checker.id = "checker" + checkerId;
+            checkerId++;
+
+            var img = new Image();
+            img.id = e.details.checker.id;
+            img.style.position = "absolute";
+            img.style.zIndex = 2;
+            img.style.height = width + "px";
+            img.style.top = e.details.checker.row * width + index_position[0] + "px";
+            img.style.left = e.details.checker.col * width + index_position[1] + "px";
+
+            if (e.details.checker.color == "red") {
+                if (e.details.checker.isKing) {
+                    img.src = sources.red_king;
+                } else {
+                    img.src = sources.red_piece;
+                }
+            } else {
+                if (e.details.checker.isKing) {
+                    img.src = sources.black_king;
+                } else {
+                    img.src = sources.black_piece;
+                }
+            }
+            document.getElementById("content").appendChild(img);
 
     	},true);
 
     	board.addEventListener('move',function (e) {
     		// Your code here
+            console.log(e);
     	},true);
 
         board.addEventListener('remove', function(e) {
