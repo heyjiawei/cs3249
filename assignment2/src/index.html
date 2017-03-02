@@ -251,9 +251,10 @@
         }       
 
         var checkerId = 0;
+        var index_position = [10, 155]; // pixels at (0, 0)
+        var width = 400 / board.size();
+
         board.addEventListener('add',function (e) {
-            var width = 400 / board.size();
-            var index_position = [10, 155]; // pixels at (0, 0)
             var sources = {
                 black_piece : "graphics/black-piece.png",
                 black_king : "graphics/black-king.png",
@@ -290,8 +291,10 @@
     	},true);
 
     	board.addEventListener('move',function (e) {
-    		// Your code here
-            console.log(e);
+            var checker = e.details.checker;
+            var img = document.getElementById(checker.id);
+            img.style.top = e.details.toRow * width + index_position[0] + "px";
+            img.style.left = e.details.toCol * width + index_position[1] + "px";
     	},true);
 
         board.addEventListener('remove', function(e) {
