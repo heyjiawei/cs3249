@@ -80,6 +80,75 @@
         }
     }
 
+    function addEventSimple(obj, event, fn) {
+    if (obj.addEventListener)
+        obj.addEventListener(event, fn, false);
+    else if (obj.attachEvent)
+        obj.attachEvent("on"+event, fn);
+    }
+
+    function removeEventSimple(obj, event, fn) {
+        if (obj.removeEventListener)
+            obj.removeEventListener(event, fn, false);
+        else if (obj.detachEvent)
+            obj.detachEvent("on"+evt, fn);
+    }
+
+    dragDrop = {
+        isGameStart: false,
+        initialMouseX: undefined,
+        initialMouseY: undefined,
+        startX: undefined,
+        startY: undefined,
+        dX: undefined,
+        dY: undefined,
+        draggedObject: undefined,
+        initElement: function(element) {
+            element = document.getElementById(element.id);
+            element.onmousedown = dragDrop.startDragMouse;
+        },
+        startDrag: function(obj) {
+            if (dragDrop.draggedObject)
+                dragDrop.releaseElement();
+            dragDrop.startX = obj.offsetLeft;
+            dragDrop.startY = obj.offsetTop;
+            dragDrop.draggedObject = obj;
+        },
+        startDragMouse: function(e) {
+            console.log("in startDragMouse");
+            if (dragDrop.isGameStart == false) {
+                return false;
+            }
+            dragDrop.startDrag(this);
+            var event = e || window.event;
+            dragDrop.initialMouseX = event.clientX;
+            dragDrop.initialMouseY = event.clientY;
+            addEventSimple(document, "mousemove", dragDrop.dragMouse);
+            addEventSimple(document, "mouseup", dragDrop.releaseElement);
+            return false;
+        },
+        dragMouse: function(e) {
+            console.log("in dragMouse");
+            if (dragDrop.isGameStart == false) {
+                return false;
+            }
+            var evt = e || window.event;
+            var dX = evt.clientX - dragDrop.initialMouseX;
+            var dY = evt.clientY - dragDrop.initialMouseY;
+            dragDrop.setPosition(dX,dY);
+            return false;
+        },
+        setPosition: function(dx, dy) {
+            dragDrop.draggedObject.style.left = dragDrop.startX + dx + 'px';
+            dragDrop.draggedObject.style.top = dragDrop.startY + dy + 'px';
+        },
+        releaseElement: function() {
+            removeEventSimple(document,'mousemove',dragDrop.dragMouse);
+            removeEventSimple(document,'mouseup',dragDrop.releaseElement);
+            dragDrop.draggedObject = null;
+        }
+    }
+
     // This allows the Javascript code inside this block to only run when the page
     // has finished loading in the browser.
     $(document).ready(function() {
@@ -193,10 +262,12 @@
             var canvasDiv = document.getElementById("canvasDiv");
             canvasDiv.style.position = "relative";
             canvasDiv.appendChild(img);
+            dragDrop.initElement(img);
 
+            // Set arrow overlay canvas
             var svg = document.getElementById("svgCanvas");
             svg.style.position = "absolute";
-            svg.style.zIndex = 4;
+            svg.style.zIndex = 2;
             svg.style.top = "0px";
     	},true);
 
@@ -238,9 +309,13 @@
             // Restart Timer
             clearTimeout(tickId);
             countdown();
+
+            dragDrop.isGameStart = true;
+            console.log("in start game button");
+            console.log(dragDrop.isGameStart);
         });
 
-        $("#btnNewGame").click(function(evt) {
+        $("#btnResetGame").click(function(evt) {
             board.prepareNewGame();
 
             // Set turn to black
@@ -256,7 +331,7 @@
 
             // Stop countdown
             clearTimeout(tickId);
-            setTimer(10, 0);
+            setTimer(0, 0);
             setTimerFontColour(whoseTurn);
         });
 
@@ -307,7 +382,7 @@
                 <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black Turn</span></div>
               </td></tr>
               <tr><td><input id="btnStartGame" type="button" name="new" value="Start Game"></td></tr>
-              <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
+              <tr><td><input id="btnResetGame" type="button" name="new" value="Reset Game"/></td></tr>
               <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
               <tr><td><input id="btnUndo" type="button" name="new" value="Undo"></td></tr>
               <tr><td><input id="btnRedo" type="button" name="new" value="Redo"></td></tr>
