@@ -75,7 +75,7 @@
             turnDiv.style.backgroundColor = colour;
             turn.innerHTML = "End Game";
         } else {
-            turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1) + "Turn";
+            turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1) + " Turn";
             turnDiv.style.backgroundColor = whoseTurn;
         }
     }
@@ -235,7 +235,9 @@
     	},true);
 
         $("#btnStartGame").click(function(evt) {
-            
+            // Restart Timer
+            clearTimeout(tickId);
+            countdown();
         });
 
         $("#btnNewGame").click(function(evt) {
@@ -302,7 +304,7 @@
                     <td><div id="timer" style="text-align: center; font-size: -webkit-xxx-large; width: 180px">00:00:00</div></td>
                 </tr>
 			  <tr><td>		<!-- Your code here -->			
-                <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black</span></div>
+                <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black Turn</span></div>
               </td></tr>
               <tr><td><input id="btnStartGame" type="button" name="new" value="Start Game"></td></tr>
               <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
