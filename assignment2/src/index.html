@@ -83,21 +83,6 @@
 
 	   rules = new Rules(board);
 
-
-     	// Your code here
-        // red at: for size 8
-        // (1,0) (3,0) (5,0) (7,0) (red king)
-        // (0,1) (2,1) (4,1) (6,1)
-        // black at:
-        // (1,6) (3,6) (5,6) (7,6)
-        // (0,7) (2,7) (4,7) (6,7) (black king)
-        function draw(move) {
-            drawCheckerboard();
-            // drawCheckers();
-            // if (typeof move !== "undefined")
-            //     drawArrow(move);
-        }
-
         function drawCheckerboard() {
             var ctx = document.getElementById('canvas').getContext('2d');
             ctx.clearRect(0, 0, 400, 400);
@@ -120,135 +105,41 @@
                 flip = !flip;
             }
         }
+        
+        var tickId;
 
-        // function loadImages(sources, callback) {
-        //     var images = {};
-        //     var loadedImages = 0;
-        //     var numImages = 0;
-        //     // get num of sources
-        //     for(var src in sources) {
-        //         numImages++;
-        //     }
-        //     for(var src in sources) {
-        //         images[src] = new Image();
-        //         images[src].onload = function() {
-        //             if(++loadedImages >= numImages) {
-        //                 callback(images);
-        //             }
-        //         };
-        //         images[src].src = sources[src];
-        //     }
-        // }
+        function setTimer(seconds, milliseconds) {
+            var timer = document.getElementById("timer");
+            if (milliseconds < 10) {
+                milliseconds = "0" + milliseconds;
+            }
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+            }
+            timer.innerHTML = "00:" + seconds + ":" + milliseconds;
+        }
 
-        // function drawCheckers() {
-            // var ctx = document.getElementById('canvas').getContext('2d');
-            // var arr = board.getAllCheckers();
-            // var width = 400 / board.size();
-            // var index_position = [10, 155]; // pixels at (0, 0)
-            // var sources = {
-            //     black_piece : "graphics/black-piece.png",
-            //     black_king : "graphics/black-king.png",
-            //     red_piece : "graphics/red-piece.png",
-            //     red_king : "graphics/red-king.png"
-            // };
+        function countdown() {
+            var seconds = 10;
+            var milliseconds = 0;
+            function tick() {
+                console.log(seconds, milliseconds);
+                setTimer(seconds, milliseconds);
+                if (milliseconds == 0 && seconds > 0) {
+                    seconds -= 1;
+                    milliseconds = 100;
+                    tickId = setTimeout(tick, 10);
 
-            // var img = new Image();
-            // img.src = "graphics/red-piece.png";
-            // img.id = "drag";
-            // img.style.position = "absolute";
-            // img.style.zIndex = 2;
+                } else if (milliseconds == 0 && seconds == 0) {
+                    $( "#btnAutoMove" ).trigger( "click" );
 
-            // // document.body.appendChild(img);
-            // document.getElementById('content').appendChild(img); 
-            
-            // for (var i = 0; i < arr.length; i++) {
-            //     var checker = arr[i];
-            //     checker.id = "drag" + i; // add DOM id to checker
-            //     var img = new Image();
-            //     img.id = checker.id;
-            //     img.style.position = "absolute";
-            //     img.style.zIndex = 2;
-
-            //     // Set image src
-            //     if (checker.color == "red") {
-            //         if (checker.isKing) {
-            //             img.src = sources.red_piece;
-            //         } else {
-            //             img.src = sources.red_king;
-            //         }
-            //     } else {
-            //         if (checker.isKing) {
-            //             img.src = sources.black_piece;
-            //         } else {
-            //             img.src = sources.black_king;
-            //         }
-            //     }
-            // }
-            // load image when loaded
-            // loadImages(sources, function(images) {
-            //     for (var i = 0; i < arr.length; i++) {
-            //         var checker = arr[i];
-            //         var img;
-            //         if (checker.color == "red") {
-            //             if (checker.isKing) {
-            //                 img = images.red_king;
-            //             } else {
-            //                 img = images.red_piece;
-            //             }
-            //         } else {
-            //             if (checker.isKing) {
-            //                 img = images.black_king;
-            //             } else {
-            //                 img = images.black_piece;
-            //             }
-            //         }
-            //         ctx.drawImage(img, 
-            //                     checker.col * each_checker_width, 
-            //                     checker.row * each_checker_width, 
-            //                     each_checker_width, 
-            //                     each_checker_width);
-            //     }
-            // });
-        // }
-
-        function drawArrow(move) {
-            var ctx = document.getElementById('canvas').getContext('2d');
-            console.log(move);
-            ctx.save();
-            var scale = DEFAULT_BOARD_SIZE / board.size();
-            var width = 400/board.size();
-            var from_center = [width * move.from_col + width/2, 
-                                width * move.from_row + width/2];
-            var to_center = [width * move.to_col + width/2,
-                            width * move.to_row + width/2];
-            console.log(from_center, to_center);
-            ctx.fillStyle = "yellow";
-            // console.log(scale);
-            //ctx.scale(scale, scale);
-
-            // translate first than scale
-            ctx.beginPath();
-            
-            // ctx.translate(100, 0); // translate to rectangle center 
-                          // x = x + 0.5 * width
-                          // y = y + 0.5 * height
-            
-            // ctx.translate(-100, 0); // translate back
-            
-            ctx.moveTo(75, 50);
-            // ctx.rotate((Math.PI / 180) * 45); // rotate
-            ctx.lineTo(100, 75);
-            ctx.lineTo(100, 25);
-            ctx.fill();
-            // ctx.save()
-
-            ctx.strokeStyle = "yellow";
-            ctx.beginPath();
-            ctx.moveTo(from_center[0], from_center[1]);
-            ctx.lineTo(to_center[0], to_center[1]);
-            ctx.stroke();
-            ctx.restore();
-        }       
+                } else {
+                    milliseconds -= 1;
+                    tickId = setTimeout(tick, 10);
+                }
+            }
+            tickId = setTimeout(tick, 100);
+        }
 
         var checkerId = 0;
         var width = 400 / board.size();
@@ -293,23 +184,25 @@
             svg.style.position = "absolute";
             svg.style.zIndex = 4;
             svg.style.top = "0px";
-
-
     	},true);
 
     	board.addEventListener('move',function (e) {
+            // Move checker
             var checker = e.details.checker;
             var img = document.getElementById(checker.id);
             img.style.top = e.details.toRow * width + "px";
             img.style.left = e.details.toCol * width + "px";
-            console.log(e);
+
+            // Move arrow
             var arrowLine = document.getElementById("arrowLine");
             arrowLine.setAttribute("y1", e.details.fromRow * width + width/2 + "px");
             arrowLine.setAttribute("x1", e.details.fromCol * width + width/2 + "px");
             arrowLine.setAttribute("y2", e.details.toRow * width + width/2 + "px");
             arrowLine.setAttribute("x2", e.details.toCol * width + width/2 + "px");
 
-            console.log(arrowLine);
+            // Restart Timer
+            clearTimeout(tickId);
+            countdown();
     	},true);
 
         board.addEventListener('remove', function(e) {
@@ -330,22 +223,39 @@
         
         $("#btnNewGame").click(function(evt) {
             board.prepareNewGame();
-            drawCheckerboard();
-            
+
+            // Set turn to black
             whoseTurn = "black";
             var turn = document.getElementById("turnColour");
             var turnDiv = document.getElementById("turnDiv");
             turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1);
             turnDiv.style.backgroundColor = whoseTurn;
+
+            // Remove arrow
+            var arrowLine = document.getElementById("arrowLine");
+            arrowLine.setAttribute("y1", "0px");
+            arrowLine.setAttribute("x1", "0px");
+            arrowLine.setAttribute("y2", "0px");
+            arrowLine.setAttribute("x2", "0px");
+
+            // Stop countdown
+            clearTimeout(tickId);
+            setTimer(10, 0);
         });
 
         $("#btnAutoMove").click(function(evt) {
-          var playerColor = whoseTurn;
-          var playerDirection = directionOf(playerColor);
-          var result = rules.makeRandomMovement(playerColor, playerDirection);
-          if (result != null) {
-            toggleTurn(whoseTurn);
-          }
+            // Restart countdown
+            clearTimeout(tickId);
+            countdown();
+            
+            // Move checkers
+            var playerColor = whoseTurn;
+            var playerDirection = directionOf(playerColor);
+            var result = rules.makeRandomMovement(playerColor, playerDirection);
+            if (result != null) {
+                toggleTurn(whoseTurn);
+
+            }
         });
 
         board.prepareNewGame();
@@ -362,13 +272,18 @@
 <table id="mainTable">
     <tr>
         <td id="navigation">
-          <table>
+            <table>
+                <tr>
+                    <td><div id="timer" style="text-align: center; font-size: -webkit-xxx-large; width: 180px">00:00:00</div></td>
+                </tr>
 			  <tr><td>		<!-- Your code here -->			
                 <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black</span> Turn</div>
               </td></tr>
+              <tr><td><input id="btnStartGame" type="button" name="new" value="Start Game"></td></tr>
               <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
               <tr><td><input id="btnAutoMove" type="button" name="new" value="Auto Move"/></td></tr>
-
+              <tr><td><input id="btnUndo" type="button" name="new" value="Undo"></td></tr>
+              <tr><td><input id="btnRedo" type="button" name="new" value="Redo"></td></tr>
             </table>
         </td>
 
