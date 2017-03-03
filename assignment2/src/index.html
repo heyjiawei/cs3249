@@ -80,75 +80,6 @@
         }
     }
 
-    function addEventSimple(obj, event, fn) {
-    if (obj.addEventListener)
-        obj.addEventListener(event, fn, false);
-    else if (obj.attachEvent)
-        obj.attachEvent("on"+event, fn);
-    }
-
-    function removeEventSimple(obj, event, fn) {
-        if (obj.removeEventListener)
-            obj.removeEventListener(event, fn, false);
-        else if (obj.detachEvent)
-            obj.detachEvent("on"+evt, fn);
-    }
-
-    dragDrop = {
-        isGameStart: false,
-        initialMouseX: undefined,
-        initialMouseY: undefined,
-        startX: undefined,
-        startY: undefined,
-        dX: undefined,
-        dY: undefined,
-        draggedObject: undefined,
-        initElement: function(element) {
-            element = document.getElementById(element.id);
-            element.onmousedown = dragDrop.startDragMouse;
-        },
-        startDrag: function(obj) {
-            if (dragDrop.draggedObject)
-                dragDrop.releaseElement();
-            dragDrop.startX = obj.offsetLeft;
-            dragDrop.startY = obj.offsetTop;
-            dragDrop.draggedObject = obj;
-        },
-        startDragMouse: function(e) {
-            console.log("in startDragMouse");
-            if (dragDrop.isGameStart == false) {
-                return false;
-            }
-            dragDrop.startDrag(this);
-            var event = e || window.event;
-            dragDrop.initialMouseX = event.clientX;
-            dragDrop.initialMouseY = event.clientY;
-            addEventSimple(document, "mousemove", dragDrop.dragMouse);
-            addEventSimple(document, "mouseup", dragDrop.releaseElement);
-            return false;
-        },
-        dragMouse: function(e) {
-            console.log("in dragMouse");
-            if (dragDrop.isGameStart == false) {
-                return false;
-            }
-            var evt = e || window.event;
-            var dX = evt.clientX - dragDrop.initialMouseX;
-            var dY = evt.clientY - dragDrop.initialMouseY;
-            dragDrop.setPosition(dX,dY);
-            return false;
-        },
-        setPosition: function(dx, dy) {
-            dragDrop.draggedObject.style.left = dragDrop.startX + dx + 'px';
-            dragDrop.draggedObject.style.top = dragDrop.startY + dy + 'px';
-        },
-        releaseElement: function() {
-            removeEventSimple(document,'mousemove',dragDrop.dragMouse);
-            removeEventSimple(document,'mouseup',dragDrop.releaseElement);
-            dragDrop.draggedObject = null;
-        }
-    }
-
     // This allows the Javascript code inside this block to only run when the page
     // has finished loading in the browser.
     $(document).ready(function() {
@@ -160,7 +91,112 @@
         }
 
 
-	   rules = new Rules(board);
+        rules = new Rules(board);
+
+        function addEventSimple(obj, event, fn) {
+        if (obj.addEventListener)
+            obj.addEventListener(event, fn, false);
+        else if (obj.attachEvent)
+            obj.attachEvent("on"+event, fn);
+        }
+
+        function removeEventSimple(obj, event, fn) {
+            if (obj.removeEventListener)
+                obj.removeEventListener(event, fn, false);
+            else if (obj.detachEvent)
+                obj.detachEvent("on"+evt, fn);
+        }
+
+        dragDrop = {
+            isGameStart: false,
+            checker: undefined,
+            initialMouseX: undefined,
+            initialMouseY: undefined,
+            startX: undefined,
+            startY: undefined,
+            dX: undefined,
+            dY: undefined,
+            draggedObject: undefined,
+            initElement: function(element) {
+                element = document.getElementById(element.id);
+                element.onmousedown = dragDrop.startDragMouse;
+            },
+            startDrag: function(obj) {
+                if (dragDrop.draggedObject)
+                    dragDrop.releaseElement();
+                dragDrop.startX = obj.offsetLeft;
+                dragDrop.startY = obj.offsetTop;
+                dragDrop.draggedObject = obj;
+
+                var width = 400 / board.size();
+                var col = parseInt(obj.style.left.slice(0, -2)) / width;
+                var row = parseInt(obj.style.top.slice(0, -2)) / width;
+                dragDrop.checker = board.getCheckerAt(row, col);
+            },
+            startDragMouse: function(e) {
+                if (dragDrop.isGameStart == false) {
+                    return false;
+                }
+                dragDrop.startDrag(this);
+                var event = e || window.event;
+                dragDrop.initialMouseX = event.clientX;
+                dragDrop.initialMouseY = event.clientY;
+                addEventSimple(document, "mousemove", dragDrop.dragMouse);
+                addEventSimple(document, "mouseup", dragDrop.releaseElement);
+                return false;
+            },
+            dragMouse: function(e) {
+                console.log("in dragMouse");
+                if (dragDrop.isGameStart == false) {
+                    return false;
+                }
+                dragDrop.draggedObject.style.zIndex = 4;
+                var evt = e || window.event;
+                var dX = evt.clientX - dragDrop.initialMouseX;
+                var dY = evt.clientY - dragDrop.initialMouseY;
+                dragDrop.setPosition(dX,dY);
+                return false;
+            },
+            setPosition: function(dx, dy) {
+                dragDrop.draggedObject.style.left = dragDrop.startX + dx + 'px';
+                dragDrop.draggedObject.style.top = dragDrop.startY + dy + 'px';
+            },
+            releaseElement: function() {
+                // Calculate position checker is placed
+                var left = dragDrop.draggedObject.style.left.slice(0, -2);
+                left = parseInt(left);
+                var top = dragDrop.draggedObject.style.top.slice(0, -2);
+                top = parseInt(top);
+
+                var width = 400 / board.size();
+                var centre = width / 2;
+                var col = Math.floor(left / width);
+                var row = Math.floor(top / width);
+
+                if (left > (col * width + centre)) {
+                    dragDrop.draggedObject.style.left = (col+1)*width + "px";
+                    col = col+1;
+                } else {
+                    dragDrop.draggedObject.style.left = col*width + "px";
+                }
+
+                if (top > (row * width + centre)) {
+                    dragDrop.draggedObject.style.top = (row+1)*width + "px";
+                    row = row+1;
+                } else {
+                    dragDrop.draggedObject.style.top = row*width + "px";
+                }
+                
+                // Move checker to position
+                board.moveTo(dragDrop.checker, row, col);
+
+                // Remove events and reset draggable object
+                removeEventSimple(document,'mousemove',dragDrop.dragMouse);
+                removeEventSimple(document,'mouseup',dragDrop.releaseElement);
+                dragDrop.draggedObject.style.zIndex = 3;
+                dragDrop.draggedObject = null;
+            }
+        }
 
         function drawCheckerboard() {
             var ctx = document.getElementById('canvas').getContext('2d');
@@ -333,6 +369,9 @@
             clearTimeout(tickId);
             setTimer(0, 0);
             setTimerFontColour(whoseTurn);
+
+            // Make checkers undraggable
+            dragDrop.isGameStart = false;
         });
 
         $("#btnAutoMove").click(function(evt) {
