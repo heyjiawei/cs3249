@@ -64,10 +64,20 @@
         } else {
             whoseTurn = "black";
         }
+        setTurnDiv(whoseTurn);
+    }
+
+    function setTurnDiv(colour) {
         var turn = document.getElementById("turnColour");
         var turnDiv = document.getElementById("turnDiv");
-        turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1);
-        turnDiv.style.backgroundColor = whoseTurn;
+
+        if (colour == "blue") {
+            turnDiv.style.backgroundColor = colour;
+            turn.innerHTML = "End Game";
+        } else {
+            turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1) + "Turn";
+            turnDiv.style.backgroundColor = whoseTurn;
+        }
     }
 
     // This allows the Javascript code inside this block to only run when the page
@@ -105,7 +115,7 @@
                 flip = !flip;
             }
         }
-        
+
         var tickId;
 
         function setTimer(seconds, milliseconds) {
@@ -119,11 +129,15 @@
             timer.innerHTML = "00:" + seconds + ":" + milliseconds;
         }
 
+        function setTimerFontColour(font_colour) {
+            timer.style.color = font_colour;
+        }
+
         function countdown() {
             var seconds = 10;
             var milliseconds = 0;
             function tick() {
-                console.log(seconds, milliseconds);
+                // console.log(seconds, milliseconds);
                 setTimer(seconds, milliseconds);
                 if (milliseconds == 0 && seconds > 0) {
                     seconds -= 1;
@@ -220,16 +234,16 @@
             }
     	},true);
 
-        
+        $("#btnStartGame").click(function(evt) {
+            
+        });
+
         $("#btnNewGame").click(function(evt) {
             board.prepareNewGame();
 
             // Set turn to black
             whoseTurn = "black";
-            var turn = document.getElementById("turnColour");
-            var turnDiv = document.getElementById("turnDiv");
-            turn.innerHTML = whoseTurn.charAt(0).toUpperCase() + whoseTurn.slice(1);
-            turnDiv.style.backgroundColor = whoseTurn;
+            setTurnDiv(whoseTurn);
 
             // Remove arrow
             var arrowLine = document.getElementById("arrowLine");
@@ -241,6 +255,7 @@
             // Stop countdown
             clearTimeout(tickId);
             setTimer(10, 0);
+            setTimerFontColour(whoseTurn);
         });
 
         $("#btnAutoMove").click(function(evt) {
@@ -254,7 +269,17 @@
             var result = rules.makeRandomMovement(playerColor, playerDirection);
             if (result != null) {
                 toggleTurn(whoseTurn);
+                setTimerFontColour(whoseTurn);
 
+            } else {
+                // Stop timer
+                clearTimeout(tickId);
+                
+                // set timer font to blue
+                setTimerFontColour("blue");
+
+                // set turn div to blue
+                setTurnDiv("blue");
             }
         });
 
@@ -277,7 +302,7 @@
                     <td><div id="timer" style="text-align: center; font-size: -webkit-xxx-large; width: 180px">00:00:00</div></td>
                 </tr>
 			  <tr><td>		<!-- Your code here -->			
-                <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black</span> Turn</div>
+                <div id="turnDiv" style="text-align: center; background: black; color: white;"><span id="turnColour">Black</span></div>
               </td></tr>
               <tr><td><input id="btnStartGame" type="button" name="new" value="Start Game"></td></tr>
               <tr><td><input id="btnNewGame" type="button" name="new" value="New Game"/></td></tr>
