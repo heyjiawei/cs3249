@@ -51,7 +51,7 @@ var Rules = function(board) {
    * Error Return: (when the move is invalid)
    *  null
    */ 
-  this.makeMovement = function(checker, turnDirection, playerDirection, toRow, toCol) {
+  this.makeMove = function(checker, turnDirection, playerDirection, toRow, toCol) {
     var ramifications = this.ramificationsOfMove(checker,
                                                  turnDirection,
                                                  playerDirection,
