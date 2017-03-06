@@ -129,8 +129,8 @@
                 dragDrop.draggedObject = obj;
 
                 var width = 400 / board.size();
-                var col = parseInt(obj.style.left.slice(0, -2)) / width;
-                var row = parseInt(obj.style.top.slice(0, -2)) / width;
+                var col = Math.ceil(parseInt(obj.style.left.slice(0, -2)) / width);
+                var row = Math.ceil(parseInt(obj.style.top.slice(0, -2)) / width);
                 dragDrop.checker = board.getCheckerAt(row, col);
             },
             startDragMouse: function(e) {
@@ -150,7 +150,7 @@
                 if (dragDrop.isGameStart == false) {
                     return false;
                 }
-
+                
                 var isPlayerTurn = (dragDrop.checker.color == whoseTurn);
                 if (isPlayerTurn == false) {
                     return false;
@@ -229,13 +229,8 @@
                                     position[0]);
 
                     if (isGameOver()) {
-                        // Stop timer
                         clearTimeout(tickId);
-                        
-                        // set timer font to blue
                         setTimerFontColour("blue");
-
-                        // set turn div to blue
                         setTurnDiv("blue");
 
                     } else {
@@ -321,7 +316,6 @@
             var seconds = 10;
             var milliseconds = 0;
             function tick() {
-                // console.log(seconds, milliseconds);
                 setTimer(seconds, milliseconds);
                 if (milliseconds == 0 && seconds > 0) {
                     seconds -= 1;
@@ -426,8 +420,6 @@
             countdown();
 
             dragDrop.isGameStart = true;
-            console.log("in start game button");
-            console.log(dragDrop.isGameStart);
         });
 
         $("#btnResetGame").click(function(evt) {
@@ -468,14 +460,10 @@
 
             } 
             if (isGameOver()) {
-                // Stop timer
                 clearTimeout(tickId);
-                
-                // set timer font to blue
                 setTimerFontColour("blue");
-
-                // set turn div to blue
                 setTurnDiv("blue");
+
             }
                 
         });
