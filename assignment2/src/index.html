@@ -195,8 +195,8 @@
                 var invalid_list = rules.validMovesFor(dragDrop.checker, directionOf(whoseTurn));
                 var position = dragDrop.getPlacedCheckerPosition();
                 for (var moves of invalid_list) {
-                    console.log(moves.to_col, moves.to_row);
-                    console.log(position);
+                    // console.log(moves.to_col, moves.to_row);
+                    // console.log(position);
                     if (position[0] == moves.to_col &&
                         position[1] == moves.to_row) {
                         return true;
@@ -210,18 +210,22 @@
             },
             releaseElement: function() {
                 var position = dragDrop.getPlacedCheckerPosition();
-                console.log(position);
+                // console.log(position);
                 var inXrange = position[0] >=0 && position[0] < 8;
                 var inYrange = position[1] >=0 && position[1] < 8;
                 var isValidMove = dragDrop.isValidMove(position[0], position[1]);
 
-                console.log(isValidMove);
+                // console.log(isValidMove);
                 
                 if (isValidMove) {
-                    board.moveTo(dragDrop.checker, position[1], position[0]);
+                    rules.makeMove(dragDrop.checker, 
+                                    directionOf(whoseTurn), 
+                                    directionOf(whoseTurn), 
+                                    position[1], 
+                                    position[0]);
                     toggleTurn(whoseTurn);
                     setTimerFontColour(whoseTurn);
-                    
+
                 } else {
                     board.moveTo(dragDrop.checker, dragDrop.checker.row, dragDrop.checker.col);
                     dragDrop.setCheckerPosition(dragDrop.checker.col, dragDrop.checker.row);
