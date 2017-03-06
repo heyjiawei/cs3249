@@ -146,7 +146,6 @@
                 return false;
             },
             dragMouse: function(e) {
-                // console.log("in dragMouse");
                 if (dragDrop.isGameStart == false) {
                     return false;
                 }
@@ -161,7 +160,7 @@
                 dragDrop.draggedObject.style.left = dragDrop.startX + dx + 'px';
                 dragDrop.draggedObject.style.top = dragDrop.startY + dy + 'px';
             },
-            releaseElement: function() {
+            getPlacedCheckerPosition: function() {
                 // Calculate position checker is placed
                 var left = dragDrop.draggedObject.style.left.slice(0, -2);
                 left = parseInt(left);
@@ -175,35 +174,59 @@
 
                 var moreThanHalfX = left > (col * width + centre);
                 var moreThanHalfY = top > (row * width + centre);
-                var maxBorder = 400 - centre;
 
-                if (left >= maxBorder || 
-                    top >= maxBorder ||
-                    left <= -centre || 
-                    top <= -centre) {
-                    col = dragDrop.checker.col;
-                    row = dragDrop.checker.row;
-                    dragDrop.draggedObject.style.left = col*width + "px";
-                    dragDrop.draggedObject.style.top = row*width + "px";
-                
+                if (moreThanHalfX) {
+                    dragDrop.draggedObject.style.left = (col+1)*width + "px";
+                    col = col+1;
                 } else {
-                    if (moreThanHalfX) {
-                        dragDrop.draggedObject.style.left = (col+1)*width + "px";
-                        col = col+1;
-                    } else {
-                        dragDrop.draggedObject.style.left = col*width + "px";
-                    }
+                    dragDrop.draggedObject.style.left = col*width + "px";
+                }
 
-                    if (moreThanHalfY) {
-                        dragDrop.draggedObject.style.top = (row+1)*width + "px";
-                        row = row+1;
-                    } else {
-                        dragDrop.draggedObject.style.top = row*width + "px";
-                    }
+                if (moreThanHalfY) {
+                    dragDrop.draggedObject.style.top = (row+1)*width + "px";
+                    row = row+1;
+                } else {
+                    dragDrop.draggedObject.style.top = row*width + "px";
                 }
                 
-                // Move checker to position
-                board.moveTo(dragDrop.checker, row, col);
+                return [col, row];
+            },
+            isValidMove() {
+                var invalid_list = rules.validMovesFor(dragDrop.checker, directionOf(whoseTurn));
+                var position = dragDrop.getPlacedCheckerPosition();
+                for (var moves of invalid_list) {
+                    console.log(moves.to_col, moves.to_row);
+                    console.log(position);
+                    if (position[0] == moves.to_col &&
+                        position[1] == moves.to_row) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            setCheckerPosition(x, y) {
+                dragDrop.draggedObject.style.left = x*width + "px";
+                dragDrop.draggedObject.style.top = y*width + "px";
+            },
+            releaseElement: function() {
+                var position = dragDrop.getPlacedCheckerPosition();
+                console.log(position);
+                var inXrange = position[0] >=0 && position[0] < 8;
+                var inYrange = position[1] >=0 && position[1] < 8;
+                var isValidMove = dragDrop.isValidMove(position[0], position[1]);
+
+                console.log(isValidMove);
+                
+                if (isValidMove) {
+                    board.moveTo(dragDrop.checker, position[1], position[0]);
+                    toggleTurn(whoseTurn);
+                    setTimerFontColour(whoseTurn);
+                    
+                } else {
+                    board.moveTo(dragDrop.checker, dragDrop.checker.row, dragDrop.checker.col);
+                    dragDrop.setCheckerPosition(dragDrop.checker.col, dragDrop.checker.row);
+                }
+
 
                 // Remove events and reset draggable object
                 removeEventSimple(document,'mousemove',dragDrop.dragMouse);
