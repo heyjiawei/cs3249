@@ -192,11 +192,14 @@
                 return [col, row];
             },
             isValidMove() {
+                var isPlayerTurn = (dragDrop.checker.color == whoseTurn);
+                if (isPlayerTurn == false) {
+                    return false;
+                }
+
                 var invalid_list = rules.validMovesFor(dragDrop.checker, directionOf(whoseTurn));
                 var position = dragDrop.getPlacedCheckerPosition();
                 for (var moves of invalid_list) {
-                    // console.log(moves.to_col, moves.to_row);
-                    // console.log(position);
                     if (position[0] == moves.to_col &&
                         position[1] == moves.to_row) {
                         return true;
