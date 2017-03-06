@@ -155,7 +155,7 @@
                 if (isPlayerTurn == false) {
                     return false;
                 }
-                
+
                 dragDrop.draggedObject.style.zIndex = 4;
                 var evt = e || window.event;
                 var dX = evt.clientX - dragDrop.initialMouseX;
@@ -200,7 +200,7 @@
             },
             isValidMove() {
                 var invalid_list = rules.validMovesFor(dragDrop.checker, directionOf(whoseTurn));
-                console.log(invalid_list);
+                // console.log(invalid_list);
                 var position = dragDrop.getPlacedCheckerPosition();
                 for (var moves of invalid_list) {
                     if (position[0] == moves.to_col &&
@@ -221,16 +221,27 @@
                 var inYrange = position[1] >=0 && position[1] < 8;
                 var isValidMove = dragDrop.isValidMove(position[0], position[1]);
 
-                // console.log(isValidMove);
-                
                 if (isValidMove) {
                     rules.makeMove(dragDrop.checker, 
                                     directionOf(whoseTurn), 
                                     directionOf(whoseTurn), 
                                     position[1], 
                                     position[0]);
-                    toggleTurn(whoseTurn);
-                    setTimerFontColour(whoseTurn);
+
+                    if (isGameOver()) {
+                        // Stop timer
+                        clearTimeout(tickId);
+                        
+                        // set timer font to blue
+                        setTimerFontColour("blue");
+
+                        // set turn div to blue
+                        setTurnDiv("blue");
+
+                    } else {
+                        toggleTurn(whoseTurn);
+                        setTimerFontColour(whoseTurn);
+                    }
 
                 } else {
                     board.moveTo(dragDrop.checker, dragDrop.checker.row, dragDrop.checker.col);
@@ -244,6 +255,26 @@
                 dragDrop.draggedObject.style.zIndex = 3;
                 dragDrop.draggedObject = null;
             }
+        }
+
+        function isGameOver() {
+            var checkers = board.getAllCheckers();
+            if (checkers.length == 1) {
+                return true;
+            }
+
+            var prevColor = null;
+            for (var i = 0; i < checkers.length; i++) {
+                if (prevColor == null) {
+                    prevColor = checkers[i].color;
+                } 
+                
+                if (prevColor != checkers[i].color) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         function drawCheckerboard() {
@@ -435,7 +466,8 @@
                 toggleTurn(whoseTurn);
                 setTimerFontColour(whoseTurn);
 
-            } else {
+            } 
+            if (isGameOver()) {
                 // Stop timer
                 clearTimeout(tickId);
                 
@@ -445,6 +477,7 @@
                 // set turn div to blue
                 setTurnDiv("blue");
             }
+                
         });
 
         board.prepareNewGame();
