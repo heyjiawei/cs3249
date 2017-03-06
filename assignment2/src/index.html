@@ -137,6 +137,7 @@
                 if (dragDrop.isGameStart == false) {
                     return false;
                 }
+
                 dragDrop.startDrag(this);
                 var event = e || window.event;
                 dragDrop.initialMouseX = event.clientX;
@@ -149,6 +150,12 @@
                 if (dragDrop.isGameStart == false) {
                     return false;
                 }
+
+                var isPlayerTurn = (dragDrop.checker.color == whoseTurn);
+                if (isPlayerTurn == false) {
+                    return false;
+                }
+                
                 dragDrop.draggedObject.style.zIndex = 4;
                 var evt = e || window.event;
                 var dX = evt.clientX - dragDrop.initialMouseX;
@@ -192,12 +199,8 @@
                 return [col, row];
             },
             isValidMove() {
-                var isPlayerTurn = (dragDrop.checker.color == whoseTurn);
-                if (isPlayerTurn == false) {
-                    return false;
-                }
-
                 var invalid_list = rules.validMovesFor(dragDrop.checker, directionOf(whoseTurn));
+                console.log(invalid_list);
                 var position = dragDrop.getPlacedCheckerPosition();
                 for (var moves of invalid_list) {
                     if (position[0] == moves.to_col &&
