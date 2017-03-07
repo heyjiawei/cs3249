@@ -150,7 +150,7 @@
                 if (dragDrop.isGameStart == false) {
                     return false;
                 }
-                
+
                 var isPlayerTurn = (dragDrop.checker.color == whoseTurn);
                 if (isPlayerTurn == false) {
                     return false;
@@ -333,16 +333,21 @@
             tickId = setTimeout(tick, 100);
         }
 
-        var checkerId = 0;
-        var width = 400 / board.size();
-        var sources = {
-            black_piece : "graphics/black-piece.png",
-            black_king : "graphics/black-king.png",
-            red_piece : "graphics/red-piece.png",
-            red_king : "graphics/red-king.png"
-        };
+        function addToUndoStack(checker, col, row) {
+            undo_stack.push([[checker, col, row]]);
+        }
 
-        board.addEventListener('add',function (e) {
+        function addToUndoState(checker) {
+            var prevState = undo_stack.pop();
+            prevState.push(checker);
+            undo_stack.push(prevState);
+        }
+
+        function addToRedoStack(checker, col, row) {
+
+        }
+
+        function setUpBoard(e) {
             e.details.checker.id = "checker" + checkerId;
             checkerId++;
 
@@ -378,6 +383,28 @@
             svg.style.position = "absolute";
             svg.style.zIndex = 2;
             svg.style.top = "0px";
+        }
+
+        var checkerId = 0;
+        var width = 400 / board.size();
+        var sources = {
+            black_piece : "graphics/black-piece.png",
+            black_king : "graphics/black-king.png",
+            red_piece : "graphics/red-piece.png",
+            red_king : "graphics/red-king.png"
+        };
+
+        board.addEventListener('add',function (e) {
+            console.log("in add");
+            if (isUndoState) {
+                var checker = e.details.checker;
+                console.log(checker);
+                document.getElementById(checker.id).style.display = "";
+                console.log(document.getElementById(checker.id).style.display);
+            } else {
+                setUpBoard(e);
+            }
+            
     	},true);
 
     	board.addEventListener('move',function (e) {
@@ -397,11 +424,24 @@
             // Restart Timer
             clearTimeout(tickId);
             countdown();
+
+            // console.log(e);
+            if (isUndoState) {
+                addToRedoStack(checker, e.details.fromCol, e.details.fromRow);
+                
+            } else {
+                console.log("in move, adding to undo stack");
+                addToUndoStack(checker, e.details.fromCol, e.details.fromRow);
+            }
     	},true);
 
         board.addEventListener('remove', function(e) {
             var checkerId = e.details.checker.id;
-            document.getElementById(checkerId).remove();
+            // document.getElementById(checkerId).remove();
+            document.getElementById(checkerId).style.display = "none";
+            console.log(document.getElementById(checkerId));
+            addToUndoState(e.details.checker);
+            console.log(undo_stack);
         }, true);
 
         board.addEventListener('promote',function (e) {
@@ -443,6 +483,11 @@
 
             // Make checkers undraggable
             dragDrop.isGameStart = false;
+
+            // Clear board history
+            isUndoState = false;
+            undo_stack = [];
+            redo_stack = [];
         });
 
         $("#btnAutoMove").click(function(evt) {
@@ -464,13 +509,36 @@
                 setTimerFontColour("blue");
                 setTurnDiv("blue");
 
+            }   
+        });
+
+        var undo_stack = [];
+        var redo_stack = []; // stores checker and their from_positions
+        var isUndoState = false;
+        $("#btnUndo").click(function(evt) {
+            isUndoState = true;
+            var prevState = undo_stack.pop();
+            console.log(prevState);
+            var prevMove = prevState[0]; 
+
+            for (var i = 1; i < prevState.length; i++) {
+                var rmvChecker = prevState[i];
+                board.add(rmvChecker, rmvChecker.row, rmvChecker.col);
+                console.log("added");
             }
-                
+
+            board.moveTo(prevMove[0], prevMove[2], prevMove[1]);
+            toggleTurn(whoseTurn);
+            setTimerFontColour(whoseTurn);
+            isUndoState = false;
+        });
+
+        $("#btnRedo").click(function(evt) {
+
         });
 
         board.prepareNewGame();
         drawCheckerboard();
-
     });
 </script>
 
