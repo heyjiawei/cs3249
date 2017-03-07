@@ -200,7 +200,6 @@
             },
             isValidMove() {
                 var invalid_list = rules.validMovesFor(dragDrop.checker, directionOf(whoseTurn));
-                // console.log(invalid_list);
                 var position = dragDrop.getPlacedCheckerPosition();
                 for (var moves of invalid_list) {
                     if (position[0] == moves.to_col &&
@@ -216,7 +215,6 @@
             },
             releaseElement: function() {
                 var position = dragDrop.getPlacedCheckerPosition();
-                // console.log(position);
                 var inXrange = position[0] >=0 && position[0] < 8;
                 var inYrange = position[1] >=0 && position[1] < 8;
                 var isValidMove = dragDrop.isValidMove(position[0], position[1]);
@@ -337,9 +335,9 @@
             undo_stack.push([[checker, col, row]]);
         }
 
-        function addToUndoState(checker) {
+        function addToUndoState(move) {
             var prevState = undo_stack.pop();
-            prevState.push(checker);
+            prevState.push(move);
             undo_stack.push(prevState);
         }
 
@@ -395,18 +393,16 @@
         };
 
         board.addEventListener('add',function (e) {
-            console.log("in add");
             if (isUndoState) {
                 var checker = e.details.checker;
-                console.log(checker);
                 document.getElementById(checker.id).style.display = "";
-                console.log(document.getElementById(checker.id).style.display);
             } else {
                 setUpBoard(e);
             }
             
     	},true);
 
+        var nextKing = null;
     	board.addEventListener('move',function (e) {
             // Move checker
             var checker = e.details.checker;
@@ -425,23 +421,23 @@
             clearTimeout(tickId);
             countdown();
 
-            // console.log(e);
             if (isUndoState) {
                 addToRedoStack(checker, e.details.fromCol, e.details.fromRow);
-                
+
             } else {
-                console.log("in move, adding to undo stack");
                 addToUndoStack(checker, e.details.fromCol, e.details.fromRow);
+
+                if (nextKing != null) {
+                    addToUndoState(nextKing);
+                    nextKing = null;
+                }
             }
     	},true);
 
         board.addEventListener('remove', function(e) {
             var checkerId = e.details.checker.id;
-            // document.getElementById(checkerId).remove();
             document.getElementById(checkerId).style.display = "none";
-            console.log(document.getElementById(checkerId));
-            addToUndoState(e.details.checker);
-            console.log(undo_stack);
+            addToUndoState([e.details.checker, "remove"]);
         }, true);
 
         board.addEventListener('promote',function (e) {
@@ -452,6 +448,8 @@
             } else {
                 img.src = sources.black_king;
             }
+
+            nextKing = [checker, "promote"];
     	},true);
 
         $("#btnStartGame").click(function(evt) {
@@ -509,7 +507,8 @@
                 setTimerFontColour("blue");
                 setTurnDiv("blue");
 
-            }   
+            }
+            dragDrop.isGameStart = true;   
         });
 
         var undo_stack = [];
@@ -518,13 +517,23 @@
         $("#btnUndo").click(function(evt) {
             isUndoState = true;
             var prevState = undo_stack.pop();
-            console.log(prevState);
             var prevMove = prevState[0]; 
 
             for (var i = 1; i < prevState.length; i++) {
                 var rmvChecker = prevState[i];
-                board.add(rmvChecker, rmvChecker.row, rmvChecker.col);
-                console.log("added");
+                var checker = rmvChecker[0];
+
+                if (rmvChecker[1] == "remove") {
+                    board.add(checker, checker.row, checker.col);
+                }
+                if (rmvChecker[1] == "promote") {
+                    checker.isKing = false;
+                    if (checker.color == "red") {
+                        document.getElementById(checker.id).src = sources.red_piece;
+                    } else {
+                        document.getElementById(checker.id).src = sources.black_piece;
+                    }
+                }
             }
 
             board.moveTo(prevMove[0], prevMove[2], prevMove[1]);
