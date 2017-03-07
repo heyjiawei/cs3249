@@ -331,18 +331,28 @@
             tickId = setTimeout(tick, 100);
         }
 
+        function showButtons(startGame, resetGame, autoMove, undo, redo) {
+            document.getElementById('btnStartGame').disabled = !startGame;
+            document.getElementById('btnResetGame').disabled = !resetGame;
+            document.getElementById('btnAutoMove').disabled = !autoMove;
+            document.getElementById('btnUndo').disabled = !undo;
+            document.getElementById('btnRedo').disabled = !redo;
+        }
+
         function addToUndoStack(checker, col, row) {
             undo_stack.push([[checker, col, row]]);
         }
 
         function addToUndoState(move) {
-            var prevState = undo_stack.pop();
-            prevState.push(move);
-            undo_stack.push(prevState);
+            if (undo_stack.length > 1) {
+                var prevState = undo_stack.pop();
+                prevState.push(move);
+                undo_stack.push(prevState);
+            }
         }
 
         function addToRedoStack(checker, col, row) {
-
+            redo_stack.push([[checker, col, row]]);
         }
 
         function setUpBoard(e) {
@@ -426,12 +436,28 @@
 
             } else {
                 addToUndoStack(checker, e.details.fromCol, e.details.fromRow);
+                
+                if (!isRedoState && !isUndoState) {
+                    redo_stack = [];
 
+                }
                 if (nextKing != null) {
                     addToUndoState(nextKing);
                     nextKing = null;
                 }
             }
+
+            if (undo_stack.length > 0 && redo_stack.length == 0) {
+                showButtons(false, true, true, true, false);
+            }
+
+            if (undo_stack.length == 0 && redo_stack.length > 0) {
+                showButtons(false, true, true, false, true);
+            }
+
+            if (undo_stack.length > 0 && redo_stack.length > 0) {
+                showButtons(false, true, true, true, true);
+            } 
     	},true);
 
         board.addEventListener('remove', function(e) {
@@ -458,6 +484,7 @@
             countdown();
 
             dragDrop.isGameStart = true;
+            showButtons(false, true, true, false, false);
         });
 
         $("#btnResetGame").click(function(evt) {
@@ -486,6 +513,8 @@
             isUndoState = false;
             undo_stack = [];
             redo_stack = [];
+
+            showButtons(true, false, true, false, false);
         });
 
         $("#btnAutoMove").click(function(evt) {
@@ -501,32 +530,42 @@
                 toggleTurn(whoseTurn);
                 setTimerFontColour(whoseTurn);
 
+                redo_stack = [];
+                showButtons(false, true, true, true, false);
             } 
             if (isGameOver()) {
                 clearTimeout(tickId);
                 setTimerFontColour("blue");
                 setTurnDiv("blue");
-
+                showButtons(true, false, false, true, false);
             }
             dragDrop.isGameStart = true;   
         });
 
         var undo_stack = [];
-        var redo_stack = []; // stores checker and their from_positions
         var isUndoState = false;
+        var redo_stack = [];
+        var isRedoState = false;
+
         $("#btnUndo").click(function(evt) {
+            if ((undo_stack.length - 1) <= 0) {
+                showButtons(false, true, true, false, true);
+            } else {
+                showButtons(false, true, true, true, true);
+            }
+
             isUndoState = true;
             var prevState = undo_stack.pop();
             var prevMove = prevState[0]; 
 
             for (var i = 1; i < prevState.length; i++) {
-                var rmvChecker = prevState[i];
-                var checker = rmvChecker[0];
+                var otherChecker = prevState[i];
+                var checker = otherChecker[0];
 
-                if (rmvChecker[1] == "remove") {
+                if (otherChecker[1] == "remove") {
                     board.add(checker, checker.row, checker.col);
                 }
-                if (rmvChecker[1] == "promote") {
+                if (otherChecker[1] == "promote") {
                     checker.isKing = false;
                     if (checker.color == "red") {
                         document.getElementById(checker.id).src = sources.red_piece;
@@ -542,12 +581,35 @@
             isUndoState = false;
         });
 
+        
         $("#btnRedo").click(function(evt) {
+            if ((redo_stack.length - 1) <= 0) {
+                showButtons(false, true, true, true, false);
+            }
+            isRedoState = true;
+            var nextState = redo_stack.pop();
+            var nextMove = nextState[0];
+            rules.makeMove(nextMove[0], 
+                directionOf(whoseTurn), 
+                directionOf(whoseTurn), 
+                nextMove[2], 
+                nextMove[1]);
+            
+            toggleTurn(whoseTurn);
+            setTimerFontColour(whoseTurn);
+            isRedoState = false;
 
+            if (isGameOver()) {
+                clearTimeout(tickId);
+                setTimerFontColour("blue");
+                setTurnDiv("blue");
+                showButtons(true, false, false, true, false);
+            }
         });
 
         board.prepareNewGame();
         drawCheckerboard();
+        showButtons(true, false, true, false, false);
     });
 </script>
 
