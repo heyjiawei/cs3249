@@ -51,7 +51,7 @@ const Todo = React.createClass({
 	render: function() {
 		return (
 			<li>
-				<input type="checkbox" onClick={() => {this.props.complete(this.props.todo.key)}}/>
+				<input type="checkbox" onChange={() => {this.props.complete(this.props.todo.key)}} checked={this.props.todo.isCompleted}/>
 				<a href="#" 
 				className="list-group-item" 
 				onClick={() => {this.props.remove(this.props.todo.key)}}>ID :{this.props.todo.key} / Text : {this.props.todo.text}
@@ -109,7 +109,7 @@ class TodoApp extends React.Component{
 
 	handleComplete(key) {
 		let update;
-		const remainder = this.state.data.map((todo) => {
+		const remainder = todos.map((todo) => {
 			if (todo.key == key) {
 				if (todo.hasOwnProperty('isCompleted')) {
 					update = {
@@ -158,7 +158,6 @@ class TodoApp extends React.Component{
 		const remainder = todos.filter((todo) => {
 			if (todo.hasOwnProperty('isCompleted') == false ||
 				todo.isCompleted == false) {
-				console.log(todo);
 				return todo;
 			}
 		});
