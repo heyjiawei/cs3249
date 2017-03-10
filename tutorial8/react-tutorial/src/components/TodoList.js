@@ -26,6 +26,27 @@ const TodoForm = React.createClass({
 	}
 });
 
+const TodoFilter = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<a href="#"
+				style={{margin:'30px'}}
+				onClick={() => {this.props.showAll()}}>All
+				</a>
+				<a href="#"
+				style={{margin:'30px'}}
+				onClick={() => {this.props.showCompleted()}}>Completed
+				</a>
+				<a href="#"
+				style={{margin:'30px'}}
+				onClick={() => {this.props.showUncompleted()}}>Uncompleted
+				</a>
+			</div>
+		);	
+	}
+});
+
 const Todo = React.createClass({
 	render: function() {
 		return (
@@ -71,6 +92,7 @@ class TodoApp extends React.Component{
 	}
 
 	componentDidMount() {
+		console.log("in componentDidMount");
 		this.setState({
 			data: todos
 		});
@@ -86,19 +108,18 @@ class TodoApp extends React.Component{
 	}
 
 	handleComplete(key) {
-		// this.setState({abc: _.extend(this.state.abc, {xyz: 'new value'})});
 		let update;
-		const remainder = this.state.data.filter((todo) => {
+		const remainder = this.state.data.map((todo) => {
 			if (todo.key == key) {
-				if (todo.key.hasOwnProperty('isCompleted')) {
+				if (todo.hasOwnProperty('isCompleted')) {
 					update = {
-						text: todo.val,
+						text: todo.text,
 						key : todo.key,
-						isCompleted: !todo.key.isCompleted
+						isCompleted: !(todo.isCompleted)
 					}
 				} else {
 					update = {
-						text: todo.val,
+						text: todo.text,
 						key : todo.key,
 						isCompleted: true
 					}
@@ -109,7 +130,6 @@ class TodoApp extends React.Component{
 				return todo;
 			}
 		});
-
 		todos = remainder;
 		this.setState({data : todos});
 	}
@@ -123,10 +143,41 @@ class TodoApp extends React.Component{
 		this.setState({data : todos});
 	}
 
+	handleShowComplete() {
+		const remainder = todos.filter((todo) => {
+			if (todo.hasOwnProperty('isCompleted') &&
+				todo.isCompleted == true) {
+				return todo;
+			} 
+		});
+
+		this.setState({data : remainder});
+	}
+
+	handleShowUncomplete() {
+		const remainder = todos.filter((todo) => {
+			if (todo.hasOwnProperty('isCompleted') == false ||
+				todo.isCompleted == false) {
+				console.log(todo);
+				return todo;
+			}
+		});
+
+		this.setState({data : remainder});
+	}
+
+	handleShowAll() {
+		this.setState({data : todos});
+	}
+
 	render() {
 		return (
 		<div>
 			<Title todoCount={this.state.data.length} />
+			<TodoFilter showAll={this.handleShowAll.bind(this)} 
+						showCompleted={this.handleShowComplete.bind(this)}
+						showUncompleted={this.handleShowUncomplete.bind(this)}
+			/>
 			<TodoForm addTodo={this.addTodo.bind(this)} />
 			<TodoList todos={this.state.data}
 					remove={this.handleRemove.bind(this)}
