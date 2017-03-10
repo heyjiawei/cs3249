@@ -30,6 +30,7 @@ const Todo = React.createClass({
 	render: function() {
 		return (
 			<li>
+				<input type="checkbox" onClick={() => {this.props.complete(this.props.todo.key)}}/>
 				<a href="#" 
 				className="list-group-item" 
 				onClick={() => {this.props.remove(this.props.todo.key)}}>ID :{this.props.todo.key} / Text : {this.props.todo.text}
@@ -45,7 +46,8 @@ const TodoList = React.createClass({
 			return (
 				<Todo todo={todo} 
 					key={todo.key}
-					remove={this.props.remove} />
+					remove={this.props.remove}
+					complete={this.props.complete} />
 			);
 		});
 
@@ -83,6 +85,35 @@ class TodoApp extends React.Component{
 		this.setState({data : todos});
 	}
 
+	handleComplete(key) {
+		// this.setState({abc: _.extend(this.state.abc, {xyz: 'new value'})});
+		let update;
+		const remainder = this.state.data.filter((todo) => {
+			if (todo.key == key) {
+				if (todo.key.hasOwnProperty('isCompleted')) {
+					update = {
+						text: todo.val,
+						key : todo.key,
+						isCompleted: !todo.key.isCompleted
+					}
+				} else {
+					update = {
+						text: todo.val,
+						key : todo.key,
+						isCompleted: true
+					}
+				}
+				return update;
+
+			} else {
+				return todo;
+			}
+		});
+
+		todos = remainder;
+		this.setState({data : todos});
+	}
+
 	handleRemove(key) {
 		const remainder = this.state.data.filter((todo) => {
 			if (todo.key !== key) return todo;
@@ -99,6 +130,7 @@ class TodoApp extends React.Component{
 			<TodoForm addTodo={this.addTodo.bind(this)} />
 			<TodoList todos={this.state.data}
 					remove={this.handleRemove.bind(this)}
+					complete={this.handleComplete.bind(this)}
 			/>
 		</div>
 		);
